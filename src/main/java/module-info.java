@@ -1,6 +1,8 @@
 module org.example.zereaab {
-    requires javafx.controls;
     requires javafx.fxml;
+    requires com.gluonhq.maps;
+    requires javafx.controls;
+    requires javafx.graphics;
 
 
     opens org.example.zereaab to javafx.fxml;
