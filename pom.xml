@@ -25,6 +25,16 @@
       <version>25</version>
     </dependency>
     <dependency>
+      <groupId>org.mapsforge</groupId>
+      <artifactId>mapsforge-map</artifactId>
+      <version>0.25.0</version>
+    </dependency>
+    <dependency>
+      <groupId>org.mapsforge</groupId>
+      <artifactId>mapsforge-core</artifactId>
+      <version>0.25.0</version>
+    </dependency>
+    <dependency>
       <groupId>org.openjfx</groupId>
       <artifactId>javafx-fxml</artifactId>
       <version>25</version>
@@ -45,7 +55,21 @@
       <artifactId>junit-jupiter-engine</artifactId>
       <version>${junit.version}</version>
       <scope>test</scope>
-    </dependency>  </dependencies>
+    </dependency>
+    <dependency>
+      <groupId>com.github.kellerkindt</groupId>
+      <artifactId>mapsforgefx</artifactId>
+      <version>b4f8e2a</version>
+    </dependency>
+  </dependencies>
+
+  <repositories>
+    <repository>
+      <id>jitpack.io</id>
+      <url>https://jitpack.io</url>
+    </repository>
+  </repositories>
+
 
   <build>
     <plugins>
