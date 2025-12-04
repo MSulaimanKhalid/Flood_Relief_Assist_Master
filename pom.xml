@@ -16,7 +16,42 @@
   <dependencies>
     <dependency>
       <groupId>org.openjfx</groupId>
+      <artifactId>javafx-base</artifactId>
+      <version>25</version>
+    </dependency>
+    <dependency>
+      <groupId>org.openjfx</groupId>
       <artifactId>javafx-controls</artifactId>
+      <version>25</version>
+    </dependency>
+    <dependency>
+      <groupId>org.mapsforge</groupId>
+      <artifactId>mapsforge-map</artifactId>
+      <version>0.25.0</version>
+    </dependency>
+    <dependency>
+      <groupId>org.mapsforge</groupId>
+      <artifactId>mapsforge-map-awt</artifactId>
+      <version>0.25.0</version>
+    </dependency>
+    <dependency>
+      <groupId>org.mapsforge</groupId>
+      <artifactId>mapsforge-map-reader</artifactId>
+      <version>0.25.0</version>
+    </dependency>
+    <dependency>
+      <groupId>org.mapsforge</groupId>
+      <artifactId>mapsforge-themes</artifactId>
+      <version>0.25.0</version>
+    </dependency>
+    <dependency>
+      <groupId>org.mapsforge</groupId>
+      <artifactId>mapsforge-core</artifactId>
+      <version>0.25.0</version>
+    </dependency>
+    <dependency>
+      <groupId>org.openjfx</groupId>
+      <artifactId>javafx-swing</artifactId>
       <version>25</version>
     </dependency>
     <dependency>
@@ -24,8 +59,12 @@
       <artifactId>javafx-fxml</artifactId>
       <version>25</version>
     </dependency>
-
-<dependency>
+    <dependency>
+      <groupId>com.gluonhq</groupId>
+      <artifactId>maps</artifactId>
+      <version>2.0.0-ea+6</version>
+    </dependency>
+    <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter-api</artifactId>
       <version>${junit.version}</version>
@@ -36,7 +75,10 @@
       <artifactId>junit-jupiter-engine</artifactId>
       <version>${junit.version}</version>
       <scope>test</scope>
-    </dependency>  </dependencies>
+    </dependency>
+  </dependencies>
+
+
 
   <build>
     <plugins>
@@ -55,7 +97,7 @@
         <version>0.0.8</version>
         <executions>
           <execution>
-            <!-- Default configuration for running with: mvn clean javafx:run -->
+
             <id>default-cli</id>
             <configuration>
               <mainClass>org.example.zereaab/org.example.zereaab.HelloApplication</mainClass>
