@@ -31,8 +31,28 @@
     </dependency>
     <dependency>
       <groupId>org.mapsforge</groupId>
+      <artifactId>mapsforge-map-awt</artifactId>
+      <version>0.25.0</version>
+    </dependency>
+    <dependency>
+      <groupId>org.mapsforge</groupId>
+      <artifactId>mapsforge-map-reader</artifactId>
+      <version>0.25.0</version>
+    </dependency>
+    <dependency>
+      <groupId>org.mapsforge</groupId>
+      <artifactId>mapsforge-themes</artifactId>
+      <version>0.25.0</version>
+    </dependency>
+    <dependency>
+      <groupId>org.mapsforge</groupId>
       <artifactId>mapsforge-core</artifactId>
       <version>0.25.0</version>
+    </dependency>
+    <dependency>
+      <groupId>org.openjfx</groupId>
+      <artifactId>javafx-swing</artifactId>
+      <version>25</version>
     </dependency>
     <dependency>
       <groupId>org.openjfx</groupId>
@@ -56,19 +76,8 @@
       <version>${junit.version}</version>
       <scope>test</scope>
     </dependency>
-    <dependency>
-      <groupId>com.github.kellerkindt</groupId>
-      <artifactId>mapsforgefx</artifactId>
-      <version>b4f8e2a</version>
-    </dependency>
   </dependencies>
 
-  <repositories>
-    <repository>
-      <id>jitpack.io</id>
-      <url>https://jitpack.io</url>
-    </repository>
-  </repositories>
 
 
   <build>
@@ -88,7 +97,7 @@
         <version>0.0.8</version>
         <executions>
           <execution>
-            <!-- Default configuration for running with: mvn clean javafx:run -->
+
             <id>default-cli</id>
             <configuration>
               <mainClass>org.example.zereaab/org.example.zereaab.HelloApplication</mainClass>
