@@ -11,13 +11,37 @@
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="org.example.zereaab.epsController"
             prefHeight="400.0" prefWidth="600.0">
+    <top>
+        <HBox prefHeight="80"/>
+    </top>
     <center>
         <SwingNode fx:id="mapNodeSwing"/>
     </center>
+    <right>
+        <VBox fx:id="zoomLevelVBox" prefWidth="120">
+            <Label fx:id="zoomCheckBoxHeading"/>
+        </VBox>
+    </right>
+    <left>
+        <VBox fx:id="evacuationAlgoControlsVBox" prefWidth="200">
+            <FlowPane>
+                <Label text="Evacuation path giving algorithm controls" textFill="red"/>
+            </FlowPane>
+            <ToggleButton fx:id="enablePlacingMarkersButton" text="PLace Markers"/>
+            <VBox fx:id="placedMarkersListVBox">
+                <Label fx:id="markersListHeading"/>
+                <ScrollPane>
+                    <VBox fx:id="placedMarkersListVBoxInsideScrollPane" prefHeight="250"/>
+                </ScrollPane>
+            </VBox>
+        </VBox>
+    </left>
     <bottom>
-        <FlowPane prefHeight="50">
-            <Label fx:id="errorLabel"/>
-        </FlowPane>
+        <ScrollPane>
+            <FlowPane prefHeight="50">
+                <Label fx:id="errorLabel"/>
+            </FlowPane>
+        </ScrollPane>
     </bottom>
 
 </BorderPane>

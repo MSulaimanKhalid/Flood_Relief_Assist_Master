@@ -11,7 +11,7 @@ public class Sulaiman_Test_Main extends Application {
     @Override
     public void start(Stage stage) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(Sulaiman_Test_Main.class.getResource("eps.fxml"));
-        Scene scene = new Scene(fxmlLoader.load(), 600, 400);
+        Scene scene = new Scene(fxmlLoader.load(), 1000, 800);
         stage.setTitle("Evacuation Path Recommender");
         stage.setScene(scene);
         stage.show();
