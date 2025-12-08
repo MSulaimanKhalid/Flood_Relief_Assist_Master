@@ -100,7 +100,7 @@
 
             <id>default-cli</id>
             <configuration>
-              <mainClass>org.example.zereaab/org.example.zereaab.HelloApplication</mainClass>
+              <mainClass>org.example.zereaab/org.example.zereaab.Sulaiman_Test_Main</mainClass>
               <launcher>app</launcher>
               <jlinkZipName>app</jlinkZipName>
               <jlinkImageName>app</jlinkImageName>
