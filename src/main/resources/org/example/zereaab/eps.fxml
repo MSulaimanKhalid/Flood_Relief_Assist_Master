@@ -34,6 +34,7 @@
                     <VBox fx:id="placedMarkersListVBoxInsideScrollPane" prefHeight="250"/>
                 </ScrollPane>
             </VBox>
+            <Button fx:id="convexHullMakingButton" text="Generate Convex Hull"/>
         </VBox>
     </left>
     <bottom>
