@@ -40,9 +40,11 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.ResourceBundle;
 
 public class epsController implements Initializable {
@@ -54,6 +56,7 @@ public class epsController implements Initializable {
     public VBox placedMarkersListVBox;
     public Label markersListHeading;
     public VBox placedMarkersListVBoxInsideScrollPane;
+    public Button convexHullMakingButton;
     @FXML private SwingNode mapNodeSwing;
     @FXML private BorderPane root;
     @FXML private Label errorLabel;
@@ -63,6 +66,11 @@ public class epsController implements Initializable {
     Label entryInMarkerList = new Label("");
     ResourceBitmap markerBitMap;
     Bitmap circleBitmap;
+    Bitmap convexPointBitmap;
+    double latRef = 0;
+    double longRef = 0;
+    final static double radiusOfEarth = 6371000;
+
 
 
     @Override
@@ -248,19 +256,65 @@ public class epsController implements Initializable {
             @Override
             public void mouseClicked(MouseEvent e) {
                 MapViewProjection mapViewProjection = new MapViewProjection(mapView);
-                LatLong latLong = mapViewProjection.fromPixels(e.getX(),e.getY());
+                LatLong latLong = mapViewProjection.fromPixels(e.getX(), e.getY());
 
                 markersPLacedQueue.enqueue(latLong);
 
-                    Platform.runLater(() -> {
-                        entryInMarkerList.setText(entryInMarkerList.getText() + "-> Lat: " + latLong.getLatitude() + " Long: " + latLong.getLongitude() + "\n");
-                    });
+                latRef = latRef + latLong.getLatitude();
+                longRef = longRef + latLong.getLongitude();
 
-                    Marker circle = new Marker(latLong, circleBitmap, -(circleBitmap.getWidth() / 2), -(circleBitmap.getHeight()/2));
-                    mapView.getLayerManager().getLayers().add(circle);
+                if(markersPLacedQueue.getSize()!=1){
+                    latRef = latRef/2;
+                    longRef = longRef/2;
+                }
+
+                Platform.runLater(() -> {
+                    entryInMarkerList.setText(entryInMarkerList.getText() + "-> Lat: " + latLong.getLatitude() + " Long: " + latLong.getLongitude() + "\n");
+                });
+
+                Marker circle = new Marker(latLong, circleBitmap, -(circleBitmap.getWidth() / 2), -(circleBitmap.getHeight() / 2));
+                mapView.getLayerManager().getLayers().add(circle);
 
             }
         };
+
+        convexHullMakingButton.setOnAction((obs) -> {
+            if (markersPLacedQueue.getSize() < 3){
+                Platform.runLater(() -> {
+                    errorLabel.setText(errorLabel.getText() + "\nAdd atleast 3 markers to map for making convex hull");
+                });
+                return;
+            }
+
+            SingleEndedQueue<Point2D.Double> projectedMarkersQueue = ConvexHull.generateHullList(markersPLacedQueue, latRef,longRef);
+
+            ArrayList<Point2D.Double> hullList = ConvexHull.generate(projectedMarkersQueue);
+            if (hullList == null){
+                Platform.runLater(() -> {
+                    errorLabel.setText(errorLabel.getText() + "\nConvex hull is invalid, it cotains less than 3 points");
+                });
+                return;
+            }
+
+            BufferedImage convexPoint = new BufferedImage(10,10,BufferedImage.TYPE_3BYTE_BGR);
+            Graphics2D convexpointGraphics = convexPoint.createGraphics();
+            convexpointGraphics.setColor(Color.GREEN);
+            convexpointGraphics.fillOval(0,0,10,10);
+            convexpointGraphics.dispose();
+
+            convexPointBitmap = new AwtBitmap(convexPoint);
+            Marker greenCircle;
+            LatLong polygonVertex;
+            Point2D.Double p;
+            for (int i=0; i<hullList.size(); i++){
+                p = hullList.get(i);
+                polygonVertex = new LatLong(latRef + Math.toDegrees(p.getY() / radiusOfEarth)  ,  longRef + Math.toDegrees(p.getX() / (radiusOfEarth * Math.cos(Math.toRadians(latRef)))));
+                System.out.println(polygonVertex.getLatitude()+"    "+polygonVertex.getLongitude());
+                greenCircle = new Marker(polygonVertex, convexPointBitmap, -(convexPointBitmap.getWidth() / 2), -(convexPointBitmap.getHeight() / 2));
+                mapView.getLayerManager().getLayers().add(greenCircle);
+            }
+
+        });
 
     }
 }
