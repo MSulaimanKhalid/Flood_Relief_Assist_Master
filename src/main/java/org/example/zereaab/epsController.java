@@ -3,13 +3,18 @@ package org.example.zereaab;
 import javafx.application.Platform;
 import javafx.embed.swing.SwingNode;
 import javafx.fxml.FXML;
+import org.mapsforge.core.graphics.Style;
+import org.mapsforge.map.layer.overlay.Circle;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
+import org.mapsforge.map.layer.overlay.FixedPixelCircle;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
+import org.example.zereaab.AssigningDataFromCSV.WaterNode;
+import org.example.zereaab.predictionGraph.RiverGraph;
 import org.mapsforge.core.graphics.Bitmap;
 import org.mapsforge.core.graphics.GraphicFactory;
 import org.mapsforge.core.graphics.ResourceBitmap;
@@ -70,6 +75,12 @@ public class epsController implements Initializable {
     double latRef = 0;
     double longRef = 0;
     final static double radiusOfEarth = 6371000;
+
+
+
+
+    //ref for graph
+    private RiverGraph graph; // hold reference to your graph
 
 
 
@@ -315,6 +326,83 @@ public class epsController implements Initializable {
             }
 
         });
+        Platform.runLater(() -> {
+            // Place all nodes from your graph
+            for (WaterNode node : graph.waterNodesToShowOnMap) {
+                LatLong ll = new LatLong(node.Latitude, node.Longitude);
+
+                // Create square image for marker
+                int size = 25; // size of square
+                BufferedImage squareImage = new BufferedImage(size, size, BufferedImage.TYPE_3BYTE_BGR);
+                Graphics2D g2d = squareImage.createGraphics();
+                g2d.setColor(Color.CYAN); // choose any color you like
+                g2d.fillRect(0, 0, size, size); // filled square
+                g2d.dispose();
+
+                Bitmap markerBitmap = new AwtBitmap(squareImage);
+
+                // Center the marker properly
+                Marker nodeMarker = new Marker(ll, markerBitmap,
+                        -(markerBitmap.getWidth() / 2),
+                        -(markerBitmap.getHeight() / 2));
+
+                mapView.getLayerManager().getLayers().add(nodeMarker);
+            }
+            // Add alert circles for day 1 outflow > 100
+            for (WaterNode node : graph.waterNodesToShowOnMap) {
+                double day1Outflow = node.overflowRatio[4]; // day 1
+                if(node.stationName.equals("Kotri")){
+                    System.out.println(day1Outflow+" check");
+                }
+                if (day1Outflow > 100) {
+                    LatLong ll = new LatLong(node.Latitude, node.Longitude);
+                    Circle floodCircle = createFloodArea(ll, day1Outflow);
+                    mapView.getLayerManager().getLayers().add(floodCircle);
+
+
+                }
+            }
+
+        });
 
     }
+    public void setGraph(RiverGraph graph) {
+        this.graph=graph;
+    }
+
+
+    private Circle createFloodArea(LatLong center, double outflow) {
+
+        double baseThreshold = 100;
+
+        double baseRadiusMeters = 8000;   // 5 km at outflow = 100
+        double metersPer10Units = 7000;   // +3 km per +10 outflow
+
+        double extra = Math.max(0, outflow - baseThreshold);
+        double radiusMeters =
+                baseRadiusMeters + (extra / 10.0) * metersPer10Units;
+
+        org.mapsforge.core.graphics.Paint fillPaint =
+                AwtGraphicFactory.INSTANCE.createPaint();
+        fillPaint.setColor(new Color(255, 0, 0, 120).getRGB());
+        fillPaint.setStyle(org.mapsforge.core.graphics.Style.FILL);
+
+        org.mapsforge.core.graphics.Paint strokePaint =
+                AwtGraphicFactory.INSTANCE.createPaint();
+        strokePaint.setColor(new Color(180, 0, 0, 200).getRGB());
+        strokePaint.setStrokeWidth(2);
+        strokePaint.setStyle(org.mapsforge.core.graphics.Style.STROKE);
+
+        return new Circle(
+                center,
+                (float) radiusMeters,
+                fillPaint,
+                strokePaint
+        );
+    }
+
+
+
+
+
 }

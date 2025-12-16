@@ -9,12 +9,15 @@ import java.io.IOException;
 
 public class Sulaiman_Test_Main extends Application {
     @Override
-    public void start(Stage stage) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(Sulaiman_Test_Main.class.getResource("eps.fxml"));
-        Scene scene = new Scene(fxmlLoader.load(), 1000, 800);
-        stage.setTitle("Evacuation Path Recommender");
+    public void start(Stage stage) throws Exception {
+        FXMLLoader loader = new FXMLLoader(Sulaiman_Test_Main.class.getResource("PredictionScreen.fxml"));
+        Scene scene = new Scene(loader.load(), 600, 400);
+        stage.setTitle("Prediction Screen");
         stage.setScene(scene);
+        stage.setMaximized(true);
         stage.show();
+
+
     }
 
     public static void main(String[] args) {

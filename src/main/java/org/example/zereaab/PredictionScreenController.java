@@ -4,8 +4,10 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import javafx.fxml.FXMLLoader;
@@ -18,7 +20,14 @@ import org.example.zereaab.predictionGraph.RiverGraph;
 
 public class PredictionScreenController {
 
+    private Tooltip infoTooltip = new Tooltip();
+    @FXML
+    private javafx.scene.layout.GridPane cardGrid;
+
     private AssignData assignData;
+    @FXML
+    private javafx.scene.layout.VBox predictionPanel;
+
 
     @FXML
     private Button evacuationButton;
@@ -58,6 +67,8 @@ public class PredictionScreenController {
     @FXML
     private Circle kotriCircle;
 
+    RiverGraph graph;
+
     @FXML
     public void initialize() {
         try {
@@ -67,7 +78,7 @@ public class PredictionScreenController {
             e.printStackTrace();
         }
 
-        RiverGraph graph=new RiverGraph(assignData);
+        graph=new RiverGraph(assignData);
 
         graph.Trimmu.isJunction = true;
         graph.Trimmu.junctionCapacity = graph.Trimmu.MaxPeak;
@@ -75,14 +86,13 @@ public class PredictionScreenController {
         graph.Panjnad.isJunction = true;
         graph.Panjnad.junctionCapacity = graph.Panjnad.MaxPeak;
 
-        System.out.println(graph.Kabul.recentOutflows+"yes this one");
-        System.out.println(graph.Chashma.recentOutflows+"yes this one recent of chasma");
+//        System.out.println(graph.Kabul.recentOutflows+"yes this one");
+//        System.out.println(graph.Chashma.recentOutflows+"yes this one recent of chasma");
         PredictionSimulator predictionSimulator=new PredictionSimulator(graph);
         predictionSimulator.run();
 
-        System.out.println(graph.Kabul.predictedOutflows+"yoho here for kabul predictions");
-        System.out.println(graph.Chashma.predictedOutflows+"chasma predicted flow");
-
+//        System.out.println(graph.Kabul.predictedOutflows+"yoho here for kabul predictions");
+//        System.out.println(graph.Chashma.predictedOutflows+"chasma predicted flow");
 
 
 
@@ -134,6 +144,29 @@ public class PredictionScreenController {
         // Initial circle setup
         setupCircles();
         linkCirclesToData();
+        //closing toolnip on mouse click
+        rootPane.setOnMouseClicked(event -> {
+
+            // If click was on a circle, do nothing
+            if (event.getTarget() instanceof Circle) {
+                return;
+            }
+
+            infoTooltip.hide();
+            cardGrid.getChildren().clear();
+
+        });
+
+        //fixing the prediction cards to far right
+        predictionPanel.layoutXProperty().bind(
+                rootPane.widthProperty().subtract(predictionPanel.prefWidthProperty())
+        );
+
+        predictionPanel.layoutYProperty().set(0);
+        predictionPanel.prefHeightProperty().bind(rootPane.heightProperty());
+        predictionPanel.prefWidthProperty().bind(rootPane.widthProperty().divide(2));
+
+
     }
 
     private void scaleCirclePositions(double currentWidth, double currentHeight) {
@@ -219,29 +252,135 @@ public class PredictionScreenController {
         linkCircle(sukkurCircle, assignData.Sukkur);
         linkCircle(kotriCircle, assignData.Kotri);
     }
+    private Pane createDayCard(int day, WaterNode node, double predictedFlow) {
+        double utilization = (predictedFlow / node.MaxPeak) * 100;
+
+        String threat;
+        javafx.scene.paint.Color color;
+
+        if (utilization < 60) {
+            threat = "NORMAL";
+            color = javafx.scene.paint.Color.LIGHTGREEN;
+        } else if (utilization < 80) {
+            threat = "WATCH";
+            color = javafx.scene.paint.Color.GOLD;
+        } else if (utilization <= 100) {
+            threat = "WARNING";
+            color = javafx.scene.paint.Color.ORANGE;
+        } else {
+            threat = "FLOOD";
+            color = javafx.scene.paint.Color.RED;
+        }
+
+        // Create the label
+        javafx.scene.control.Label label = new javafx.scene.control.Label(
+                "Station: " + node.stationName + "\n" +
+                        "Day: " + day + " of 7\n\n" +
+                        "Predicted Flow: " + String.format("%.2f", predictedFlow) + "\n" +
+                        "Max Capacity: " + node.MaxPeak + "\n\n" +
+                        "Utilization: " + String.format("%.1f", utilization) + "%\n" +
+                        "Threat Level: " + threat
+        );
+        label.setWrapText(true);
+        label.setMaxWidth(220);
+        label.setStyle("-fx-font-size: 13; -fx-text-fill: black;");
+
+        // VBox holds the label
+        javafx.scene.layout.VBox content = new javafx.scene.layout.VBox(label);
+        content.setPadding(new javafx.geometry.Insets(10));
+        content.setSpacing(5);
+
+        // Set background color **directly on VBox**
+        content.setBackground(
+                new javafx.scene.layout.Background(
+                        new javafx.scene.layout.BackgroundFill(
+                                color.deriveColor(1, 1, 1, 0.6), // semi-transparent for readability
+                                new javafx.scene.layout.CornerRadii(10),
+                                null
+                        )
+                )
+        );
+
+        // Outer Pane for consistent sizing if needed
+        Pane card = new Pane(content);
+        card.setPrefHeight(110);
+        card.setPrefWidth(250);
+
+        // Make VBox fill the Pane
+        content.prefWidthProperty().bind(card.widthProperty());
+        content.prefHeightProperty().bind(card.heightProperty());
+
+        // Optional: border for clarity
+        content.setStyle(content.getStyle() + "-fx-border-radius: 10; -fx-border-color: black; -fx-border-width: 1;");
+
+        return card;
+    }
+
+
+
     private void linkCircle(Circle circle, WaterNode node) {
         if (circle == null || node == null) return;
 
         circle.setOnMouseClicked(event -> {
-            showWaterNodeInfo(node);
+
+            // ✅ CLEAR ONLY THE GRID
+            cardGrid.getChildren().clear();
+
+
+            int col = 0;
+            int row = 0;
+
+            for (int day = 1; day <= 7; day++) {
+                double predictedFlow = node.predictedOutflows.get(day - 1);
+
+                Pane card = createDayCard(day, node, predictedFlow);
+                card.setPrefWidth(250);
+                card.setPrefHeight(350);
+
+                cardGrid.add(card, col, row);
+
+                if (day == 7) {
+                    GridPane.setColumnSpan(card, 2); // take both columns
+                    GridPane.setHalignment(card, javafx.geometry.HPos.CENTER);
+                }
+
+                col++;
+                if (col == 2) {
+                    col = 0;
+                    row++;
+                }
+
+            }
+
+            // -------- Tooltip logic (unchanged) --------
+            String info =
+                    "Station: " + node.stationName + "\n" +
+                            "River: " + node.partOfRiver + "\n" +
+                            "Height: " + node.StationHeight + "\n" +
+                            "Inflow: " + node.inflow + "\n" +
+                            "Outflow: " + node.outflow + "\n" +
+                            "Max Peak: " + node.MaxPeak + "\n"+
+                            "Last reading at: "+node.lastReadingAt;
+
+
+            infoTooltip.setText(info);
+            infoTooltip.setStyle(
+                    "-fx-background-color: rgba(30,30,30,0.9);" +
+                            "-fx-text-fill: white;" +
+                            "-fx-font-size: 12px;" +
+                            "-fx-padding: 8;" +
+                            "-fx-background-radius: 8;"
+            );
+
+            double x = circle.localToScreen(circle.getBoundsInLocal()).getMinX();
+            double y = circle.localToScreen(circle.getBoundsInLocal()).getMinY();
+
+            infoTooltip.show(circle, x, y - 80);
         });
     }
-    private void showWaterNodeInfo(WaterNode node) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle(node.stationName);
 
-        String info =
-                "Station: " + node.stationName + "\n" +
-                        "River: " + node.partOfRiver + "\n" +
-                        "Height: " + node.StationHeight + "\n" +
-                        "Inflow: " + node.inflow + "\n" +
-                        "Outflow: " + node.outflow + "\n" +
-                        "Max Peak: " + node.MaxPeak + "\n" +
-                        "Last Reading: " + node.lastReadingAt + "\n";
 
-        alert.setContentText(info);
-        alert.show();
-    }
+
 
 
     @FXML
@@ -253,6 +392,8 @@ public class PredictionScreenController {
             Stage stage = (Stage) evacuationButton.getScene().getWindow();
             stage.setScene(evacScene);
 
+            epsController controller = loader.getController();
+            controller.setGraph(graph);
         } catch (Exception e) {
             e.printStackTrace();
         }

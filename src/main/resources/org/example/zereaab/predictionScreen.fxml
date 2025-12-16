@@ -16,6 +16,18 @@
             </ImageView>
         </content>
     </ScrollPane>
+    <VBox fx:id="predictionPanel"
+          spacing="12"
+          prefWidth="420"
+          style="-fx-padding: 20; -fx-background-color: #f5f5f5;">
+
+        <GridPane fx:id="cardGrid"
+                  hgap="12"
+                  vgap="12"/>
+
+    </VBox>
+
+
 
 
     <!-- Water Node Circles - Position these manually on your map -->

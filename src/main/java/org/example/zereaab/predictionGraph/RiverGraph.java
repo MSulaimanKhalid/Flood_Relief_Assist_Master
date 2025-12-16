@@ -12,6 +12,7 @@ public class RiverGraph {
     public WaterNode Kabul, TarbelaDam, Kalabagh, Chashma, Taunsa,Marala, Trimmu, Panjnad,
             ManglaDam,Guddu, Sukkur, Kotri;
 
+    public List<WaterNode> waterNodesToShowOnMap = new ArrayList<>();
     public List<RiverEdge> edges = new ArrayList<>();
 
 
@@ -31,6 +32,20 @@ public class RiverGraph {
         Guddu = data.Guddu;
         Sukkur = data.Sukkur;
         Kotri = data.Kotri;
+
+        waterNodesToShowOnMap.add(Kabul);
+        waterNodesToShowOnMap.add(TarbelaDam);
+        waterNodesToShowOnMap.add(Kalabagh);
+        waterNodesToShowOnMap.add(Chashma);
+        waterNodesToShowOnMap.add(Taunsa);
+        waterNodesToShowOnMap.add(Marala);
+        waterNodesToShowOnMap.add(Trimmu);
+        waterNodesToShowOnMap.add(Panjnad);
+        waterNodesToShowOnMap.add(ManglaDam);
+        waterNodesToShowOnMap.add(Guddu);
+        waterNodesToShowOnMap.add(Sukkur);
+        waterNodesToShowOnMap.add(Kotri);
+
 
         buildGraphConnections();
     }

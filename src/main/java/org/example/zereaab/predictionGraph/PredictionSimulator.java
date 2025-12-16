@@ -46,7 +46,7 @@ public class PredictionSimulator {
         // 🔹 Predict ONLY next 7 days
         for (int day = 1; day <= 7; day++) {
 
-            System.out.println("=== Prediction Day " + day + " ===");
+//            System.out.println("=== Prediction Day " + day + " ===");
 
             for (WaterNode node : nodes) {
 
@@ -89,14 +89,14 @@ public class PredictionSimulator {
                 int ratio = (int)((predictedAfterC2 / node.MaxPeak) * 100);
                 node.overflowRatio[day - 1] = ratio;
 
-                if(node.stationName.equals("Chashma")) {
-                    System.out.println("\nChashma: " + node.stationName);
-                    System.out.println("  Inflow   → " + inflow);
-                    System.out.println("  Trend    → " + trend);
-                    System.out.println("  Predicted→ " + predictedAfterC2);
-                    System.out.println("  Window   → " + node.recentOutflows);
-                    System.out.println("  Overflow %→ " + ratio + "%");
-                }
+//                if(node.stationName.equals("Kotri")) {
+//                    System.out.println("\nChashma: " + node.stationName);
+//                    System.out.println("  Inflow   → " + inflow);
+//                    System.out.println("  Trend    → " + trend);
+//                    System.out.println("  Predicted→ " + predictedAfterC2);
+//                    System.out.println("  Window   → " + node.recentOutflows);
+//                    System.out.println("  Overflow %→ " + ratio + "%");
+//                }
 
 
 
@@ -107,8 +107,6 @@ public class PredictionSimulator {
                     }
                 }
             }
-
-            System.out.println("---------------------------");
         }
 
 
@@ -149,6 +147,7 @@ public class PredictionSimulator {
 
         return predicted + strength * (eq - predicted);
     }
+
 
 
 
